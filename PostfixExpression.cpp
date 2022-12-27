@@ -6,6 +6,7 @@
 #include "PostfixExpression.h"
 #include "TStack.h"
 #include "PostfixExpressionBuilder.h"
+#include "ExpressionParser.h"
 
 double PostfixExpression::evaluate() {
     if(tokens.empty())
@@ -35,7 +36,7 @@ double PostfixExpression::evaluate() {
                 tokenStack.Pop();
                 op1 = ExtractTokenValue(tokenStack.Top());
                 tokenStack.Pop();
-                t = ExpressionToken(PostfixExpressionBuilder::binaryOperators.at(token.getStringRepresentation()[0]).operation(op1, op2));
+                t = ExpressionToken(ExpressionParser::binaryOperators.at(token.getStringRepresentation()[0]).operation(op1, op2));
                 tokenStack.Push(t);
                 break;
             default:
@@ -80,7 +81,7 @@ double PostfixExpression::ExtractTokenValue(ExpressionToken &token) {
     {
         case VARIABLE:
             if (std::isnan(variables.at(token.getStringRepresentation())))
-                throw std::invalid_argument("variable is not assigned yet");
+                throw std::invalid_argument("variable \"" + token.getStringRepresentation() + "\" is not assigned yet");
             return variables.at(token.getStringRepresentation());
         case CONSTANT:
             return token.getValue();

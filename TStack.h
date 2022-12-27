@@ -12,13 +12,13 @@ private:
     size_t nextIndex = 0;
     T *elements;
 public:
-    explicit TStack(int size = 50) : stackSize(size), nextIndex(0), elements(new T[size]){};
+    explicit TStack(size_t size = 50) : stackSize(size), nextIndex(0), elements(new T[size]){};
     TStack(TStack &&s)  noexcept;
     TStack &operator = (TStack &&s)  noexcept;
     T &Top();
     const T &Top() const;
     void Pop();
-    void Push(T &elem);
+    void Push(const T &elem);
     bool isFull();
     bool isEmpty();
     size_t getSize();
@@ -72,7 +72,7 @@ bool TStack<T>::isFull() {
 }
 
 template<class T>
-void TStack<T>::Push(T &elem) {
+void TStack<T>::Push(const T &elem) {
     if(isFull())
         throw std::out_of_range("Stack is full");
     elements[nextIndex] = elem;
