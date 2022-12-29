@@ -20,7 +20,7 @@ double factorial(int n)
     return res;
 }
 
-const std::unordered_map<char, binOperator> ExpressionParser::binaryOperators = {
+const Table<char, binOperator> ExpressionParser::binaryOperators = {
         {'+', { 1, ([](double a, double b){ return a+b; } ) }},
         {'-', { 1, ([](double a, double b){ return a-b; } ) }},
         {'*', { 2, ([](double a, double b){ return a*b; } ) }},
@@ -29,24 +29,30 @@ const std::unordered_map<char, binOperator> ExpressionParser::binaryOperators = 
             return a/b; } ) }},
         {'^', { 3, ([](double a, double b){ return pow(a, b); } ) }}
 };
-const std::unordered_map<std::string, unaryFunction> ExpressionParser::unaryFunctions = {
+const Table<std::string, unaryFunction> ExpressionParser::unaryFunctions = {
         {"sin", [](double a){return sin(a); }},
         {"cos", [](double a){return cos(a); }},
         {"tg", [](double a){return tan(a); }},
         {"ctg", [](double a){return cos(a)/sin(a); }},
-        {"sqrt", [](double a){return sqrt(a);}},
-        {"ln", [](double a){return log(a); }}
+        {"sqrt", [](double a){
+            if(a < 0)
+                throw std::invalid_argument("Sqrt can only work with positive numbers");
+            return sqrt(a);}},
+        {"ln", [](double a){
+            if(a <= 0)
+                throw std::invalid_argument("ln can only work with positive numbers");
+            return log(a); }}
 };
-const std::unordered_map<std::string, unaryFunction> ExpressionParser::postfixFunctions = {
+const Table<std::string, unaryFunction> ExpressionParser::postfixFunctions = {
         {"!", [](double a){return factorial((int) a); }}
 };
 
 void ExpressionParser::ParseTokens(std::stringstream &stream, std::vector<ExpressionToken> &infixTokens,
-                                   std::unordered_map<std::string, double> &variables) {
+                                   Table<std::string, double> &variables) {
     while((stream >> std::ws).good())
     {
         char c = stream.peek();
-        if(binaryOperators.find(c) != binaryOperators.end())
+        if(binaryOperators.find(c))
         {
             binOperator op = binaryOperators.at(c);
             infixTokens.emplace_back(c, &op.operation, op.priority);
@@ -64,7 +70,7 @@ void ExpressionParser::ParseTokens(std::stringstream &stream, std::vector<Expres
         int funcNameSize = 0;
         while(stream.good() && funcNameSize < 6) {
             c = stream.peek();
-            if((c - '0' >= 0 && c - '0' <= 9) || c == ' ' || c == '(' || c == ')' || c == '\377')
+            if((c - '0' >= 0 && c - '0' <= 9) || c == ' ' || c == '(' || c == ')' || c == '\377' || binaryOperators.find(c))
             {
                 break;
             }
@@ -75,16 +81,16 @@ void ExpressionParser::ParseTokens(std::stringstream &stream, std::vector<Expres
             }
         }
         if(!funcName.empty()) {
-            if (unaryFunctions.find(funcName) != unaryFunctions.end()) {
+            if (unaryFunctions.find(funcName)) {
                 infixTokens.emplace_back(PREFIX_FUNCTION, funcName, &unaryFunctions.at(funcName));
                 continue;
             }
-            if (postfixFunctions.find(funcName) != postfixFunctions.end())
+            if (postfixFunctions.find(funcName))
             {
                 infixTokens.emplace_back(POSTFIX_FUNCTION, funcName, &unaryFunctions.at(funcName));
                 continue;
             }
-            variables.insert(std::pair<std::string, double>(funcName, std::numeric_limits<double>::quiet_NaN()));
+            variables.add({funcName, std::numeric_limits<double>::quiet_NaN()});
             infixTokens.emplace_back(funcName);
             continue;
         }

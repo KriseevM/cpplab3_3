@@ -10,7 +10,7 @@
 TEST(expression_parsing, constant_parsed)
 {
     std::vector<ExpressionToken> tokens;
-    std::unordered_map<std::string, double> vars;
+    Table<std::string, double> vars({});
     std::stringstream input("20.0045");
     ExpressionParser::ParseTokens(input, tokens, vars);
     EXPECT_EQ(CONSTANT, tokens[0].getType());
@@ -19,11 +19,11 @@ TEST(expression_parsing, constant_parsed)
 TEST(expression_parsing, variable_parsed)
 {
     std::vector<ExpressionToken> tokens;
-    std::unordered_map<std::string, double> vars;
+    Table<std::string, double> vars({});
     std::stringstream input("abc");
     ExpressionParser::ParseTokens(input, tokens, vars);
     EXPECT_EQ(VARIABLE, tokens[0].getType());
-    EXPECT_TRUE(vars.find("abc") != vars.end());
+    EXPECT_TRUE(vars.find("abc"));
 }
 
 

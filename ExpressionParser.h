@@ -8,6 +8,7 @@
 #include <functional>
 #include <cmath>
 #include "PostfixExpression.h"
+#include "Table.h"
 
 typedef std::function<double(double, double)> binFunction;
 typedef std::function<double(double)> unaryFunction;
@@ -17,14 +18,14 @@ typedef struct {
 } binOperator;
 
 class ExpressionParser {
-    static const std::unordered_map<char, binOperator> binaryOperators;
+    static const Table<char, binOperator> binaryOperators;
 
-    static const std::unordered_map<std::string, unaryFunction> unaryFunctions;
-    static const std::unordered_map<std::string, unaryFunction> postfixFunctions;
+    static const Table<std::string, unaryFunction> unaryFunctions;
+    static const Table<std::string, unaryFunction> postfixFunctions;
 
 public:
     static void ParseTokens(std::stringstream &stream, std::vector<ExpressionToken> &infixTokens,
-                            std::unordered_map<std::string, double> &variables);
+                            Table<std::string, double> &variables);
     friend class PostfixExpression;
 };
 

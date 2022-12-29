@@ -9,6 +9,7 @@
 #include <vector>
 #include <unordered_map>
 #include "ExpressionToken.h"
+#include "Table.h"
 
 class PostfixExpression {
 private:
@@ -16,7 +17,7 @@ private:
     std::vector<ExpressionToken> tokens;
     std::string postfixFormString;
     const std::string originalExpressionString;
-    std::unordered_map<std::string, double> variables;
+    Table<std::string, double> variables;
 public:
     const std::string &getPostfixFormString() const;
     const std::string &getOriginalExpressionString() const;

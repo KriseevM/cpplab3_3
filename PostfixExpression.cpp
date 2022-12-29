@@ -47,11 +47,12 @@ double PostfixExpression::evaluate() {
         throw std::invalid_argument("Could not get final result from exception");
     return tokenStack.Top().getValue();
 }
-PostfixExpression::PostfixExpression(const std::string &originalExpressionString) : originalExpressionString(originalExpressionString) {}
+PostfixExpression::PostfixExpression(const std::string &originalExpressionString) : originalExpressionString(originalExpressionString),
+                                                                                    variables({}) {}
 void PostfixExpression::setVariable(const std::string &variableName, double value) {
-    if(variables.find(variableName) == variables.end())
+    if(!variables.find(variableName))
         throw std::out_of_range("Invalid variable name");
-    variables[variableName] = value;
+    variables.at(variableName) = value;
 }
 
 const std::string &PostfixExpression::getPostfixFormString() const {
@@ -67,13 +68,7 @@ double PostfixExpression::getVariableValue(const std::string &variableName) {
 }
 
 std::vector<std::string> PostfixExpression::getVariableNames() const{
-    std::vector<std::string> varNames;
-    varNames.reserve(variables.size());
-    for(auto& pair : variables)
-    {
-        varNames.emplace_back(pair.first);
-    }
-    return varNames;
+    return variables.getKeys();
 }
 
 double PostfixExpression::ExtractTokenValue(ExpressionToken &token) {

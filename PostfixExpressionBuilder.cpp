@@ -17,7 +17,7 @@ PostfixExpression PostfixExpressionBuilder::buildPostfixException(const std::str
     std::stringstream stream(infixExpressionString);
     std::vector<ExpressionToken> infixTokens;
     infixTokens.reserve(infixExpressionString.size());
-    std::unordered_map<std::string, double> variables;
+    Table<std::string, double> variables({});
     ExpressionParser::ParseTokens(stream, infixTokens, variables);
     if(!InfixExpressionValidator::isExpressionValid(infixTokens))
     {
